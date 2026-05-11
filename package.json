@@ -1,0 +1,33 @@
+{
+  "name": "recurrly-api",
+  "version": "1.0.0",
+  "description": "Node.js, express, typescript API with Clerk Auth for Recurrly",
+  "license": "ISC",
+  "author": "hv.ok.01",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --stage local",
+    "start": "node --loader ts-node/esm src/index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@clerk/backend": "^3.4.5",
+    "@clerk/express": "^2.1.13",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.20",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0",
+    "nodemailer": "^8.0.7"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
