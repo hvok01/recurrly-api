@@ -1,34 +1,61 @@
-import mongoose, { Document, Schema } from "mongoose";
-import crypto from "crypto";
+import mongoose from "mongoose";
 
-export interface IUser extends Document {
-  name: string;
-  setPassword: (password: string) => void;
-  validatePassword: (password: string) => void;
-}
+const userSchema = new mongoose.Schema(
+  {
+    clerkId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      index: true,
+      trim: true,
+    },
+    name: {
+      type: String,
+      required: [true, "User Name is required"],
+      trim: true,
+      minlength: 2,
+      maxlength: 50,
+    },
+    email: {
+      type: String,
+      required: [true, "User Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      match: [/\S+@\S+\.\S+/, "Invalid email format"],
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "clerk"],
+      default: "local",
+    },
+    imageUrl: {
+      type: String,
+      trim: true,
+    },
+    password: {
+      type: String,
+      minlength: 8,
+      select: false,
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
+    toObject: {
+      transform: (doc, ret) => {
+        delete ret.password;
+        return ret;
+      },
+    },
+  }
+);
 
-const UserSchema: Schema = new Schema({
-  name: { type: String, required: true },
-  passwordHash: { type: String, required: true },
-  passwordSalt: { type: String, required: true },
-});
+const User = mongoose.model("User", userSchema);
 
-UserSchema.methods.setPassword = function (password: string) {
-  this.passwordSalt = crypto.randomBytes(16).toString();
-
-  this.passwordHash = crypto
-    .pbkdf2Sync(password, this.passwordSalt, 1000, 64, "sha512")
-    .toString("hex");
-
-  return;
-};
-
-UserSchema.methods.validatePassword = function (password: string) {
-  const hash = crypto
-    .pbkdf2Sync(password, this.passwordSalt, 1000, 64, "sha512")
-    .toString("hex");
-
-  return this.passwordHash === hash;
-};
-
-export default mongoose.model<IUser>("User", UserSchema);
+export default User;

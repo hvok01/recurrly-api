@@ -1,7 +1,7 @@
-import { Router } from "express";
-import { signup, signin, signout } from "../controllers/auth.controller";
+import express from "express";
+import { signup, signin, signout } from "../controllers/auth.controller.ts";
 
-const authRouter = Router();
+const authRouter = express.Router();
 
 // POST sign up
 authRouter.post("/signup", signup);
