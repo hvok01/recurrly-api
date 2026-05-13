@@ -3,9 +3,9 @@ import { getAuth } from "@clerk/express";
 import { parsePositiveInt } from "../utils/utils.ts";
 import Category from "../models/category.ts";
 
-export const getCategoriesPaged = async (req: express.Request & { body: { pageSize: number, pageCount: number, } }, res: express.Response) => {
+export const getCategoriesPaged = async (req: express.Request, res: express.Response) => {
     try {
-        const { pageSize, pageCount } = req.body;
+        const { pageSize, pageCount } = req.query;
         const { userId } = getAuth(req);
 
         if (!userId) {

@@ -3,9 +3,9 @@ import Subscription from "../models/subscription.ts";
 import { getAuth } from "@clerk/express";
 import { parsePositiveInt } from "../utils/utils.ts";
 
-export const getSubscriptionsPaged = async (req: express.Request & { body: { pageSize: number, pageCount: number, } }, res: express.Response) => {
+export const getSubscriptionsPaged = async (req: express.Request, res: express.Response) => {
     try {
-        const { pageSize, pageCount } = req.body;
+        const { pageSize, pageCount } = req.query;
         const { userId } = getAuth(req);
 
         if (!userId) {
