@@ -5,7 +5,7 @@ export interface ISubscription extends Document {
     price: number, 
     frecuency: string, 
     category: string, 
-    userId: string
+    userId: string,
 }
 
 const SubscriptionSchema: Schema = new Schema({
