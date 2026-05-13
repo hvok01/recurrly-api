@@ -1,14 +1,9 @@
 import express from "express";
 import Subscription from "../models/subscription.ts";
 import { getAuth } from "@clerk/express";
+import { parsePositiveInt } from "../utils/utils.ts";
 
-const parsePositiveInt = (value: unknown, fallback: number): number => {
-    const n = typeof value === "string" ? parseInt(value, 10) : Number(value);
-    if (!Number.isFinite(n) || n < 1) return fallback;
-    return Math.floor(n);
-};
-
-export const getSubscriptions = async (req: express.Request & { body: { pageSize: number, pageCount: number, } }, res: express.Response) => {
+export const getSubscriptionsPaged = async (req: express.Request & { body: { pageSize: number, pageCount: number, } }, res: express.Response) => {
     try {
         const { pageSize, pageCount } = req.body;
         const { userId } = getAuth(req);
