@@ -48,11 +48,17 @@ async function start() {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/subscriptions", subscriptionRouter);
-  app.use("/api/v1/category", categoryRouter)
-
-  app.listen(process.env.HTTP_PORT, () => {
-    console.log(`Server is running on port ${process.env.HTTP_PORT}`);
-  });
+  app.use("/api/v1/category", categoryRouter);
+  
+  app.listen(
+    Number(process.env.HTTP_PORT),
+    "0.0.0.0",
+    () => {
+      console.log(
+        `Server is running on port ${process.env.HTTP_PORT}`
+      );
+    }
+  );
 }
 
 start();

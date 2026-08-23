@@ -41,13 +41,20 @@ export const getSubscriptionsPaged = async (req: express.Request, res: express.R
             success: true,
             message: "Subscriptions fetched successfully.",
             data: {
-                subscriptions: subscriptions.map((s) => ({
-                    id: s._id,
-                    name: s.name,
-                    price: s.price,
-                    frecuency: s.frecuency,
-                    category: s.category,
-                    userId: s.userId,
+                subscriptions: subscriptions.map((subscriptionItem) => ({
+                    id: subscriptionItem._id,
+                    name: subscriptionItem.name,
+                    price: subscriptionItem.price,
+                    plan: subscriptionItem.plan,
+                    billing: subscriptionItem.billing,
+                    category: subscriptionItem.category,
+                    userId: subscriptionItem.userId,
+                    imageUrl: subscriptionItem.imageUrl,
+                    status: subscriptionItem.status,
+                    startDate: subscriptionItem.startDate,
+                    currency: subscriptionItem.currency,
+                    renewalDate: subscriptionItem.renewalDate,
+                    color: subscriptionItem.color,
                 })),
                 pagination: {
                     pageCount: count,
@@ -66,9 +73,9 @@ export const getSubscriptionsPaged = async (req: express.Request, res: express.R
     }
 }
 
-export const addSubscription = async (req: express.Request & { body: { name: string, price: number, frecuency: string, category: string } }, res: express.Response) => {
+export const addSubscription = async (req: express.Request & { body: { subscription: any } }, res: express.Response) => {
     try {
-        const { name, price, frecuency, category } = req.body;
+        const { name, price, plan, billing, category, imageUrl, status, startDate, currency, renewalDate, color } = req.body;
         const { userId } = getAuth(req);
 
         if (!userId) {
@@ -78,33 +85,35 @@ export const addSubscription = async (req: express.Request & { body: { name: str
             });
         }
     
-        if (!name || !price || !frecuency || !category) {
+        if (!name || !price || !plan || !billing || !category || !imageUrl || !status || !startDate || !currency || !renewalDate || !color) {
             return res.status(400).json({
                 success: false,
                 message: "Missing fields: please fill all the fields.",
             });
         }
     
-        const subscriptionDoc = new Subscription({
-            name,
-            price,
-            frecuency,
-            category,
-            userId
-        });
+        const s = new Subscription({name, price, plan, billing, category, imageUrl, status, startDate, currency, renewalDate, color, userId });
   
-        await subscriptionDoc.save();
+        await s.save();
 
         return res.status(201).json({
             success: true,
             message: "Subscription created successfully.",
             data: {
                 subscription: {
-                    id: subscriptionDoc._id,
-                    name: subscriptionDoc.name,
-                    price: subscriptionDoc.price,
-                    category: subscriptionDoc.category,
-                    userId: subscriptionDoc.userId,
+                    id: s._id,
+                    name: s.name,
+                    price: s.price,
+                    plan: s.plan,
+                    billing: s.billing,
+                    category: s.category,
+                    userId: s.userId,
+                    imageUrl: s.imageUrl,
+                    status: s.status,
+                    startDate: s.startDate,
+                    currency: s.currency,
+                    renewalDate: s.renewalDate,
+                    color: s.color,
                 }
             }
         });

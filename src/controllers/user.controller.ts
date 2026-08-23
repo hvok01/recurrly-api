@@ -1,4 +1,4 @@
-import User from "../models/user";
+import User from "../models/user.js";
 
 const createForbiddenError = (message: string) => {
   const error = new Error(message);
