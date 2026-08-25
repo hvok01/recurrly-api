@@ -5,11 +5,11 @@
   "license": "ISC",
   "author": "hv.ok.01",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon --stage local",
-    "start": "node --loader ts-node/esm src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "dependencies": {
     "@clerk/backend": "^3.4.5",

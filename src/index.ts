@@ -16,9 +16,7 @@ const parseCsvEnv = (value: any) =>
     .filter(Boolean) || [];
 
 async function start() {
-  dotenv.config({
-    path: "./.env",
-  });
+  dotenv.config();
 
   const allowedOrigins = parseCsvEnv(process.env.CORS_ORIGINS);
   const authorizedParties = parseCsvEnv(process.env.CLERK_AUTHORIZED_PARTIES);
@@ -51,11 +49,11 @@ async function start() {
   app.use("/api/v1/category", categoryRouter);
   
   app.listen(
-    Number(process.env.HTTP_PORT),
+    Number(process.env.PORT || 5001),
     "0.0.0.0",
     () => {
       console.log(
-        `Server is running on port ${process.env.HTTP_PORT}`
+        `Server is running on port ${process.env.PORT}`
       );
     }
   );
