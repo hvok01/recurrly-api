@@ -125,3 +125,97 @@ export const addSubscription = async (req: express.Request & { body: { subscript
         });
     }
 };
+
+export const getSubscriptionsBalance = async (req: express.Request, res: express.Response) => {
+    try {
+        const { userId } = getAuth(req);
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "User not authenticated",
+            });
+        }
+
+        const now = new Date();
+
+        const result = await Subscription.aggregate([
+            {
+                $match: {
+                userId,
+                status: "active",
+                },
+            },
+            {
+                $facet: {
+                balance: [
+                    {
+                    $group: {
+                        _id: null,
+                        amount: {
+                        $sum: "$price",
+                        },
+                    },
+                    },
+                ],
+
+                nextRenewal: [
+                    {
+                        $match: {
+                            renewalDate: {
+                            $gt: now,
+                            },
+                        },
+                    },
+                    {
+                        $sort: {
+                            renewalDate: 1,
+                        },
+                    },
+                    {
+                        $limit: 1,
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            renewalDate: 1,
+                        },
+                    },
+                ],
+                },
+            },
+            {
+                $project: {
+                _id: 0,
+                amount: {
+                    $ifNull: [
+                        { $arrayElemAt: ["$balance.amount", 0] },
+                        0,
+                    ],
+                },
+                nextRenewalDate: {
+                        $ifNull: [
+                        { $arrayElemAt: ["$nextRenewal.renewalDate", 0] },
+                        null,
+                        ],
+                    },
+                },
+            },
+        ]);
+
+        const balance = result[0] ? result[0] : {};
+
+        return res.status(200).json({
+            success: true,
+            message: "Subscriptions balance fetched successfully.",
+            data: balance,
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            data: null
+        });
+    }
+}
