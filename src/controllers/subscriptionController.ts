@@ -139,69 +139,7 @@ export const getSubscriptionsBalance = async (req: express.Request, res: express
 
         const now = new Date();
 
-        const result = await Subscription.aggregate([
-            {
-                $match: {
-                userId,
-                status: "active",
-                },
-            },
-            {
-                $facet: {
-                balance: [
-                    {
-                    $group: {
-                        _id: null,
-                        amount: {
-                        $sum: "$price",
-                        },
-                    },
-                    },
-                ],
-
-                nextRenewal: [
-                    {
-                        $match: {
-                            renewalDate: {
-                            $gt: now,
-                            },
-                        },
-                    },
-                    {
-                        $sort: {
-                            renewalDate: 1,
-                        },
-                    },
-                    {
-                        $limit: 1,
-                    },
-                    {
-                        $project: {
-                            _id: 0,
-                            renewalDate: 1,
-                        },
-                    },
-                ],
-                },
-            },
-            {
-                $project: {
-                _id: 0,
-                amount: {
-                    $ifNull: [
-                        { $arrayElemAt: ["$balance.amount", 0] },
-                        0,
-                    ],
-                },
-                nextRenewalDate: {
-                        $ifNull: [
-                        { $arrayElemAt: ["$nextRenewal.renewalDate", 0] },
-                        null,
-                        ],
-                    },
-                },
-            },
-        ]);
+        const result = await Subscription.aggregate([ { $match: { userId, status: "active", }, }, { $facet: { balance: [ { $group: { _id: null, amount: { $sum: "$price", }, }, }, ], nextRenewal: [ { $addFields: { renewalDateParsed: { $dateFromString: { dateString: "$renewalDate", }, }, }, }, { $match: { $expr: { $gt: ["$renewalDateParsed", now], }, }, }, { $sort: { renewalDateParsed: 1, }, }, { $limit: 1, }, { $project: { _id: 0, renewalDate: "$renewalDateParsed", }, }, ], }, }, { $project: { _id: 0, amount: { $ifNull: [ { $arrayElemAt: ["$balance.amount", 0] }, 0, ], }, nextRenewalDate: { $ifNull: [ { $arrayElemAt: ["$nextRenewal.renewalDate", 0] }, null, ], }, }, }, ]);
 
         const balance = result[0] ? result[0] : {};
 
